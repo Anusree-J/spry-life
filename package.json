@@ -1,0 +1,16 @@
+{
+  "name": "spry-life-site",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write site .github *.md *.json scripts/*.mjs",
+    "format:check": "prettier --check site .github *.md *.json scripts/*.mjs",
+    "lint": "html-validate site/index.html && node scripts/check-css.mjs",
+    "test": "python3 -m unittest discover -s tests -v",
+    "build": "python3 scripts/build.py"
+  },
+  "devDependencies": {
+    "css-tree": "3.2.1",
+    "html-validate": "11.16.2",
+    "prettier": "3.9.10"
+  }
+}

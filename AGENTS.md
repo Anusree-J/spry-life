@@ -20,7 +20,9 @@ Commands:
 - Build: `npm run build`
 - Preview: `python3 -m http.server 8769 --directory site`
 
-Architecture: `site` contains exactly three public files. `scripts/build.py`
-packages only those files and .nojekyll. The custom domain is configured in GitHub
+Architecture: `site` contains exactly six public files: home page, 404 page,
+stylesheet, favicon, link-preview image and the self-hosted Inter font
+(SIL OFL 1.1, licence in `licenses/`). `scripts/build.py` packages only those
+files and .nojekyll. No third-party font or script requests. The custom domain is configured in GitHub
 Pages settings; Actions publishing does not use a CNAME file. There are no runtime
 secrets or dependencies. Development dependencies are locked in package-lock.json.

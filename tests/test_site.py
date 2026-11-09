@@ -41,8 +41,40 @@ class SiteTests(unittest.TestCase):
         self.assertIn('href="https://mysunny.world/"', html)
         self.assertNotIn("<script", html)
 
+    def test_link_preview_points_at_a_packaged_image(self):
+        with urlopen(self.origin) as response:
+            html = response.read().decode()
+        self.assertIn('<link rel="canonical" href="https://sprylife.org/" />', html)
+        self.assertIn(
+            '<meta property="og:image" content="https://sprylife.org/og-image.png" />',
+            html,
+        )
+        image = (ROOT / "dist" / "og-image.png").read_bytes()
+        self.assertEqual(image[:8], b"\x89PNG\r\n\x1a\n")
+        width = int.from_bytes(image[16:20], "big")
+        height = int.from_bytes(image[20:24], "big")
+        self.assertEqual((width, height), (1200, 630))
+
+    def test_font_is_self_hosted_woff2(self):
+        css = (ROOT / "dist" / "style.css").read_text()
+        self.assertIn('url("/inter.woff2")', css)
+        self.assertNotIn("fonts.googleapis", css)
+        self.assertEqual((ROOT / "dist" / "inter.woff2").read_bytes()[:4], b"wOF2")
+
+    def test_not_found_page_links_home(self):
+        html = (ROOT / "dist" / "404.html").read_text()
+        self.assertIn('<meta name="robots" content="noindex" />', html)
+        self.assertIn('href="/"', html)
+        self.assertNotIn("<script", html)
+
     def test_assets_are_served_intact(self):
-        for name in ("style.css", "favicon.svg"):
+        for name in (
+            "404.html",
+            "style.css",
+            "favicon.svg",
+            "og-image.png",
+            "inter.woff2",
+        ):
             with self.subTest(name=name), urlopen(self.origin + "/" + name) as response:
                 self.assertEqual(response.status, 200)
                 self.assertEqual(response.read(), (ROOT / "site" / name).read_bytes())
@@ -50,7 +82,15 @@ class SiteTests(unittest.TestCase):
     def test_only_public_files_are_packaged(self):
         self.assertEqual(
             {p.name for p in (ROOT / "dist").iterdir()},
-            {"index.html", "style.css", "favicon.svg", ".nojekyll"},
+            {
+                "index.html",
+                "404.html",
+                "style.css",
+                "favicon.svg",
+                "og-image.png",
+                "inter.woff2",
+                ".nojekyll",
+            },
         )
         for path in (ROOT / "site").iterdir():
             self.assertFalse(path.is_symlink())

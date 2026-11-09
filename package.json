@@ -4,7 +4,7 @@
   "scripts": {
     "format": "prettier --write site .github *.md *.json scripts/*.mjs",
     "format:check": "prettier --check site .github *.md *.json scripts/*.mjs",
-    "lint": "html-validate site/index.html && node scripts/check-css.mjs",
+    "lint": "html-validate site/index.html site/404.html && node scripts/check-css.mjs",
     "test": "python3 -m unittest discover -s tests -v",
     "build": "python3 scripts/build.py"
   },
